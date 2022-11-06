@@ -29,8 +29,11 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.Group;
 
-public class Main extends Application implements EventHandler<ActionEvent> {
 
+//Main class
+public class Main extends Application implements EventHandler<ActionEvent> {
+	
+	
 	Stage window, LogInStage;
 	public Scene homeScene, statusScene, orderScene, logScene;
 	double progress = .25;
@@ -50,13 +53,17 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
 	String sizes[] = { "Small", "Medium", "Large"};
 	
+	
 	public static void main(String[] args) {
 		
 		launch(args);
 	}
+	
+	//initialize screens
 	public void start(Stage primaryStage) throws Exception {
 		window = primaryStage;
 		
+		//BorderPane for home screens
 		BorderPane homeRoot = new BorderPane();
 		homeRoot.setPadding(new Insets(20));
 		homeRoot.setBottom(homeHBox());
@@ -64,6 +71,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 		homeRoot.setCenter(dealsHBox());
 		homeScene = new Scene(homeRoot, 800, 600);
 		
+		//BorderPane for status screen
 		BorderPane statusRoot = new BorderPane();
 		statusRoot.setPadding(new Insets(20));
 		statusRoot.setBottom(returnHBox());
@@ -71,100 +79,107 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 		statusRoot.setCenter(statusHBox());
 		statusScene = new Scene(statusRoot, 800, 600);
 		
+		//BorderPane for order screen
 		VBox orderRoot = new VBox();
 		orderRoot.setSpacing(10);
 		orderRoot.setPadding(new Insets(10, 10, 10, 10));
 		orderRoot.setAlignment(Pos.TOP_CENTER);
-	
 		Text title = new Text("Pizza Selection");
 		title.setStyle("-fx-font: 24 arial;");
-		
 		orderRoot.getChildren().addAll(title, hMain());
-		
 		orderScene = new Scene(orderRoot, 800, 600);
 		
-		
-		GridPane gridPaneLogIn = new GridPane();
-		gridPaneLogIn.setStyle("-fx-background-color: WHITE;");
-		gridPaneLogIn.setPrefWidth(600);
-		gridPaneLogIn.setPrefHeight(300);
-		gridPaneLogIn.getColumnConstraints().add(new ColumnConstraints(50));
-		gridPaneLogIn.getRowConstraints().add(new RowConstraints(50));
-		
-		
-		Text asuId = new Text();
-		Text warningId = new Text();
-		asuId.setText("ASURITE ID: ");
-		asuId.setFont(Font.font("Impact", 20));
-		warningId.setText("Please Enter Your ASURITE ID");
-		warningId.setFont(Font.font("Impact", 20));
-		
+		//Group for login screen                                                                                                
 		Group logRoot = new Group();
 		logScene = new Scene(logRoot);
-		TextField logInIdText = new TextField();
+		logRoot.getChildren().addAll(LogInGridPane());
 		
-		
-		Button logInButton = new Button("Log In");
-		logInButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override public void handle(ActionEvent e) {
-				String text = "";
-				boolean numbersOnly;
-				if (logInIdText.getText().isEmpty() == false) {
-					text = logInIdText.getText();
-					numbersOnly = text.chars().allMatch(Character::isDigit);
-					if (numbersOnly == true)
-					{
-						if (text.length() < 10) {
-							warningId.setText("             Not Enough Digits            ");
-						}
-						if (text.length() > 10) {
-							warningId.setText("             Too Many Digits              ");
-						}
-						if (text.length() == 9) {
-							warningId.setText("             Logging In ...              ");
-							window.setScene(statusScene);
-						}
-					}
-					else if (numbersOnly == false) {
-						warningId.setText("       Please Enter Only Digits    ");
-					}
-				}
-				else
-				{
-					warningId.setText("Please Enter Your ASURITE ID");
-				}
-				
-				
-			}
-		});
-		gridPaneLogIn.add(asuId, 1, 1);
-		gridPaneLogIn.add(warningId, 2, 0);
-		gridPaneLogIn.add(logInIdText, 2, 1);
-		gridPaneLogIn.add(logInButton, 3, 1);
-		logRoot.getChildren().addAll(gridPaneLogIn);
-		
-		
-		
+		//set window to homescene
 		window.setScene(homeScene);
 		window.setTitle("Sun Devil Pizza");
 		window.show();
 	}
 
+//Login Screen handling
+public GridPane LogInGridPane() {
+	GridPane gridPaneLogIn = new GridPane();
+	gridPaneLogIn.setStyle("-fx-background-color: WHITE;");
+	gridPaneLogIn.setPrefWidth(600);
+	gridPaneLogIn.setPrefHeight(300);
+	gridPaneLogIn.getColumnConstraints().add(new ColumnConstraints(50));
+	gridPaneLogIn.getRowConstraints().add(new RowConstraints(50));
 
-
+	Text asuId = new Text();
+	Text warningId = new Text();
+	asuId.setText("ASURITE ID: ");
+	asuId.setFont(Font.font("Impact", 20));
+	warningId.setText("Please Enter Your ASURITE ID");
+	warningId.setFont(Font.font("Impact", 20));
+	TextField logInIdText = new TextField();
 	
+
+	Button logInButton = new Button("Log In");
+	logInButton.setOnAction(new EventHandler<ActionEvent>() {
+		@Override public void handle(ActionEvent e) {
+			String text = "";
+			boolean numbersOnly;
+			if (logInIdText.getText().isEmpty() == false) {
+				text = logInIdText.getText();
+				numbersOnly = text.chars().allMatch(Character::isDigit);
+				if (numbersOnly == true)
+				{
+					if (text.length() < 10) {
+						warningId.setText("             Not Enough Digits            ");
+					}
+					if (text.length() > 10) {
+						warningId.setText("             Too Many Digits              ");
+					}
+					if (text.length() == 9) {
+						warningId.setText("             Logging In ...              ");
+						window.setScene(statusScene);
+					}
+				}
+				else if (numbersOnly == false) {
+					warningId.setText("       Please Enter Only Digits    ");
+				}
+			}
+			else
+			{
+				warningId.setText("Please Enter Your ASURITE ID");
+			}
+			
+			
+		}
+	});
+	
+	gridPaneLogIn.add(asuId, 1, 1);
+	gridPaneLogIn.add(warningId, 2, 0);
+	gridPaneLogIn.add(logInIdText, 2, 1);
+	gridPaneLogIn.add(logInButton, 3, 1);
+	
+	return gridPaneLogIn;
+}
+
+//returnHBox used for the bottom of the status screen
 public HBox returnHBox() {
 		HBox hbox = new HBox();
 		hbox.setAlignment(Pos.BOTTOM_RIGHT);
+		
+		//make a new order button set to return to home screen
 		Button returnHome = new Button("Make a New Order");
 		returnHome.setOnAction(e -> window.setScene(homeScene));
+		
+		//test button for progress bar, needs to be replaced with timer but currently directs to handle class
 		Button test = new Button("Test Order Progress");
 		test.setOnAction(this);
+		
+		
 		hbox.getChildren().addAll(returnHome, test);
 		
 		return hbox;
 }
 
+//handling for the progressbar on status screen
 public void handle(ActionEvent event) {
 	if (progress < 1) {
 			progress+=.25;
@@ -181,6 +196,8 @@ public void handle(ActionEvent event) {
 	}
 }
 
+
+//titleVbox used for top of Status Screen
 public VBox titleVBox() {
 	VBox vbox = new VBox();
 	Text title = new Text("Thank you for ordering with Sun Devil Pizza!");
@@ -194,6 +211,8 @@ public VBox titleVBox() {
 	vbox.setSpacing(10);
 	return vbox;
 }
+
+//status hbox used for progressbar
 public HBox statusHBox() {
 	HBox hbox = new HBox();
 	hbox.setSpacing(30);
@@ -208,6 +227,7 @@ public HBox statusHBox() {
 	return hbox;
 }
 
+//dealsHBox used for graphic on home screen
 public HBox dealsHBox() {
 	HBox hbox = new HBox();
 	Image img = new Image("sparkyDeal.jpeg");
@@ -221,25 +241,25 @@ public HBox dealsHBox() {
 	hbox.setAlignment(Pos.CENTER);
 	return hbox;
 }
+
+//homeHBox used for bottom of homescreen (order button)
 public HBox homeHBox() {
 	  HBox hbox = new HBox();
 	  Button orderNow = new Button("Order Now");
 	  orderNow.setPrefSize(200, 40);
 	  orderNow.setOnAction(e -> window.setScene(orderScene));
 	  hbox.setAlignment(Pos.BOTTOM_RIGHT);
-	  
 	  hbox.getChildren().add(orderNow);
 	
 	return hbox;
 }
 
+//homeVBox used for top of home screen (titles and text)
 public VBox homeVBox() {
 	 VBox vbox = new VBox();
 	 vbox.setSpacing(10);
 	 Text title = new Text("Welcome to Sun Devil Pizza!");
 	 title.setFont(Font.font("Roboto Blacak", FontWeight.BOLD, 36));
-	
-	
 	 title.setStrokeWidth(1);
 	 vbox.setAlignment(Pos.TOP_CENTER);
 	 
@@ -248,10 +268,12 @@ public VBox homeVBox() {
 	 
 	 vbox.getChildren().addAll(title, text);
 		
-	
 	return vbox;
 }
+
+//hMain used to organize order screen
 public HBox hMain() {
+	
 	HBox hbox = new HBox();
  	//hbox.setStyle("-fx-background-color: #8b0000;");
  	hbox.setPrefWidth(SCREEN_WIDTH);
@@ -261,6 +283,8 @@ public HBox hMain() {
  	hbox.getChildren().add(hRight());
 	return hbox;
 }
+
+//hLeft used for left half of order screen
 public VBox hLeft() {
 	VBox vbox = new VBox();
  	vbox.setSpacing(10);
@@ -309,6 +333,8 @@ public VBox hLeft() {
 	gridpane.add(cbPa, 1, 2);
 	
 	Button select = new Button("Confirm Selection");
+	
+	//handling for confirm selection
 	select.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -335,45 +361,48 @@ public VBox hLeft() {
 	return vbox;
 }
 
+//hRight used for right side of order screen
 public VBox hRight() {
 	VBox vbox = new VBox();
 	vbox.setSpacing(10);
-vbox.setPadding(new Insets(10, 10, 10, 10));
+	vbox.setPadding(new Insets(10, 10, 10, 10));
  	//vbox.setStyle("-fx-background-color: #FFC627;");
 	vbox.setPrefWidth(SCREEN_WIDTH/2);
  	vbox.setPrefHeight(SCREEN_HEIGHT/2);
-vbox.setAlignment(Pos.TOP_CENTER);
+ 	vbox.setAlignment(Pos.TOP_CENTER);
 
 	Text yourPizza = new Text("Your Pizza: ");
 	pizzaSize = new Text("Size: ");
-pizzaType = new Text("Type: ");
-pizzaToppings = new Text("Toppings: ");
+	pizzaType = new Text("Type: ");
+	pizzaToppings = new Text("Toppings: ");
 
-final DatePicker datePicker = new DatePicker();
-//datePicker.setOnAction(new EventHandler() {
+	final DatePicker datePicker = new DatePicker();
+	//datePicker.setOnAction(new EventHandler() {
  		//public void handle(Event t) {
  			//LocalDate date = datePicker.getValue();
  			//System.err.println("Selected date: " + date);
 			//}
 	//});
 
-TextField enterTime = new TextField("Pickup Time");
+	TextField enterTime = new TextField("Pickup Time");
 
-Button placeOrder = new Button("Order");
-placeOrder.setOnAction(new EventHandler<ActionEvent>() {
+	Button placeOrder = new Button("Order");
+	
+	//handling for order button
+	placeOrder.setOnAction(new EventHandler<ActionEvent>() {
 		@Override
 		public void handle(ActionEvent event) {
 		Alert a = new Alert(AlertType.NONE);
 		LocalDate date = datePicker.getValue();
 		if(selected == false){
 			a.setAlertType(AlertType.ERROR);
-        			a.setContentText("confirm selection");
-      			        a.show();
+        	a.setContentText("confirm selection");
+        	a.show();
 		}
 		else if(enterTime.getText().equals("Pickup Time")){
 			a.setAlertType(AlertType.ERROR);
-        			a.setContentText("enter a pickup time");
-      			        a.show();
+        	a.setContentText("enter a pickup time");
+        	a.show();
 		}
 		else if(date == null){
 			a.setAlertType(AlertType.ERROR);
