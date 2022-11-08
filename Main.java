@@ -75,7 +75,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 		homeRoot.setTop(homeVBox());
 		homeRoot.setCenter(dealsHBox());
 		homeScene = new Scene(homeRoot, 800, 600);
-		
+	
 		//BorderPane for status screen
 		BorderPane statusRoot = new BorderPane();
 		statusRoot.setPadding(new Insets(20));
