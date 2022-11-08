@@ -24,6 +24,9 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
@@ -31,6 +34,7 @@ import javafx.scene.Group;
 
 
 //Main class
+//test - hari 11/6, 8:39
 public class Main extends Application implements EventHandler<ActionEvent> {
 	
 	
@@ -45,6 +49,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Text pizzaToppings;
 	Text pizzaType;
 	Text pizzaSize;
+	Text subtitle3;
 
 	ChoiceBox cbType;
 	ChoiceBox cbSize;
@@ -52,6 +57,9 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	boolean selected = false;
 
 	String sizes[] = { "Small", "Medium", "Large"};
+	String selectedSize;
+	String selectedType;
+	String toppings;
 	
 	
 	public static void main(String[] args) {
@@ -172,9 +180,20 @@ public HBox returnHBox() {
 		//test button for progress bar, needs to be replaced with timer but currently directs to handle class
 		Button test = new Button("Test Order Progress");
 		test.setOnAction(this);
-		
-		
-		hbox.getChildren().addAll(returnHome, test);
+
+		Button orderDetails = new Button("View Order Details");
+		orderDetails.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				String t2 = toppings.substring(10); //remove "toppings"
+				t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
+				t2 = t2.substring(0, t2.length()-1); //remove comma at the end
+				t2 = t2.toLowerCase();
+				subtitle3.setText("You ordered a " + selectedSize.toLowerCase() + " " + selectedType.toLowerCase() + " pizza with " + t2);
+			}
+		});
+
+		hbox.getChildren().addAll(returnHome, test, orderDetails);
 		
 		return hbox;
 }
@@ -204,9 +223,11 @@ public VBox titleVBox() {
 	title.setFont(Font.font("Roboto Blacak", FontWeight.BOLD, 36));
 	Text subtitle = new Text("Your order has been sent to our store. ");
 	Text subtitle2 = new Text("Check the progress on your pizza here, and come pick it up when it's ready.");
+	subtitle3 = new Text("");
+	subtitle3.setFont(Font.font("Roboto Blacak", FontWeight.NORMAL, 18));
 	subtitle2.setFont(Font.font("Roboto Blacak", FontWeight.NORMAL, 18));
 	subtitle.setFont(Font.font("Roboto Blacak", FontWeight.NORMAL, 18));
-	vbox.getChildren().addAll(title, subtitle, subtitle2);
+	vbox.getChildren().addAll(title, subtitle, subtitle2, subtitle3);
 	vbox.setAlignment(Pos.TOP_CENTER);
 	vbox.setSpacing(10);
 	return vbox;
@@ -228,16 +249,17 @@ public HBox statusHBox() {
 }
 
 //dealsHBox used for graphic on home screen
-public HBox dealsHBox() {
+public HBox dealsHBox() throws FileNotFoundException {
 	HBox hbox = new HBox();
-	Image img = new Image("sparkyDeal.jpeg");
+	FileInputStream inputstream = new FileInputStream("C:\\Users\\harir\\Desktop\\sparkyDeal.jpeg");
+	Image img = new Image(inputstream);
 	
 	ImageView format = new ImageView(img);
 	format.setFitWidth(760);
 	format.setFitHeight(350);
 	
 	hbox.getChildren().add(format);
-	
+
 	hbox.setAlignment(Pos.CENTER);
 	return hbox;
 }
@@ -338,19 +360,21 @@ public VBox hLeft() {
 	select.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-			pizzaSize.setText("Size: " + cbSize.getValue().toString());
-			pizzaType.setText("Type: " + cbType.getValue().toString());
+				selectedSize =cbSize.getValue().toString();
+				selectedType = cbType.getValue().toString();
+				pizzaSize.setText("Size: " + selectedSize);
+				pizzaType.setText("Type: " + selectedType);
 
-			String toppings = "Toppings:\n";
-			if(cbM.isSelected()) {toppings = toppings + "Mushrooms\n";}
-			if(cbOl.isSelected()) {toppings = toppings + "Olives\n";}
-			if(cbP.isSelected()) {toppings = toppings + "Peppers\n";}
-			if(cbOn.isSelected()) {toppings = toppings + "Onions\n";}
-			if(cbEx.isSelected()) {toppings = toppings + "Extra cheese\n";}
-			if(cbPa.isSelected()) {toppings = toppings + "Pineapples";}
+				toppings = "Toppings:\n";
+				if(cbM.isSelected()) {toppings = toppings + "Mushrooms\n";}
+				if(cbOl.isSelected()) {toppings = toppings + "Olives\n";}
+				if(cbP.isSelected()) {toppings = toppings + "Peppers\n";}
+				if(cbOn.isSelected()) {toppings = toppings + "Onions\n";}
+				if(cbEx.isSelected()) {toppings = toppings + "Extra cheese\n";}
+				if(cbPa.isSelected()) {toppings = toppings + "Pineapples";}
 			
-			pizzaToppings.setText(toppings);
-			selected = true;
+				pizzaToppings.setText(toppings);
+				selected = true;
 			}
 	});
 
