@@ -1,4 +1,7 @@
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.css.converter.StringConverter;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -8,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.layout.BorderPane;
@@ -376,7 +381,14 @@ public VBox hRight() {
 	pizzaType = new Text("Type: ");
 	pizzaToppings = new Text("Toppings: ");
 
+	// Date info and Date HBox
+	Text enterDate = new Text("Pickup Date:");
 	final DatePicker datePicker = new DatePicker();
+	HBox hboxDate = new HBox();
+	hboxDate.setSpacing(10);
+	hboxDate.setPrefWidth(SCREEN_WIDTH/2);
+ 	hboxDate.setPrefHeight(10);
+	hboxDate.getChildren().addAll(enterDate, datePicker);
 	//datePicker.setOnAction(new EventHandler() {
  		//public void handle(Event t) {
  			//LocalDate date = datePicker.getValue();
@@ -384,8 +396,40 @@ public VBox hRight() {
 			//}
 	//});
 
-	TextField enterTime = new TextField("Pickup Time");
-
+	// Time section for spinner 
+	Text enterTime = new Text("Pickup Time:");
+	Text colon = new Text (":");
+	ObservableList<String> minute = FXCollections.observableArrayList("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", 
+			"10", "11", "12", "13", "14", "15", "16", "17", "18", "19","20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+			"30", "31", "32", "33", "34", "35", "36", "37", "38", "39","40", "41", "42", "43", "44", "45", "46", "47", "48", "49",
+			"50", "51", "52", "53", "54", "55", "56", "57", "58", "59");
+	Spinner<Integer> spinnerHour = new Spinner<>(); 
+	Spinner<String> spinnerMinute = new Spinner<>();
+	SpinnerValueFactory<Integer> valueHour = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,12);
+	SpinnerValueFactory<String> valueMinute = new SpinnerValueFactory.ListSpinnerValueFactory<String>(minute);
+	spinnerHour.setValueFactory(valueHour);
+	spinnerMinute.setValueFactory(valueMinute);
+	valueHour.setWrapAround(true);
+	valueMinute.setWrapAround(true);
+	spinnerHour.editorProperty().get().setAlignment(Pos.CENTER);
+	spinnerMinute.editorProperty().get().setAlignment(Pos.CENTER);
+	spinnerHour.setPrefSize(75, 25);
+	spinnerMinute.setPrefSize(75, 25);
+	
+	//Choice box for am/pm
+	ChoiceBox dayOrNight = new ChoiceBox();
+	dayOrNight.getItems().add("am");
+	dayOrNight.getItems().add("pm");
+	dayOrNight.setPrefWidth(20);
+	dayOrNight.getSelectionModel().selectFirst();
+	
+	//HBox for time
+	HBox hboxTime = new HBox();
+	hboxTime.setSpacing(10);
+	hboxTime.setPrefWidth(10);
+ 	hboxTime.setPrefHeight(10);
+	hboxTime.getChildren().addAll(enterTime, spinnerHour, colon, spinnerMinute, dayOrNight);
+	
 	Button placeOrder = new Button("Order");
 	
 	//handling for order button
@@ -399,12 +443,13 @@ public VBox hRight() {
         	a.setContentText("confirm selection");
         	a.show();
 		}
-		else if(enterTime.getText().equals("Pickup Time")){
+		else if((dayOrNight.getValue().equals("am") && (spinnerHour.getValue() < 10 || spinnerHour.getValue() == 12)) 
+				|| dayOrNight.getValue().equals("pm") && spinnerHour.getValue() == 11){
 			a.setAlertType(AlertType.ERROR);
-        	a.setContentText("enter a pickup time");
+        	a.setContentText("Pickup time not available. Please choose a time between 10am-10pm.");
         	a.show();
 		}
-		else if(date == null){
+		else if(date == null || date.isBefore(LocalDate.now())){
 			a.setAlertType(AlertType.ERROR);
         			a.setContentText("select a date");
       			        a.show();
@@ -415,7 +460,8 @@ public VBox hRight() {
 		}
 });
 
-	vbox.getChildren().addAll(yourPizza, pizzaSize, pizzaType, pizzaToppings, datePicker, enterTime, placeOrder);
+	vbox.getChildren().addAll(yourPizza, pizzaSize, pizzaType, pizzaToppings, hboxDate, hboxTime, placeOrder);
 return vbox;
 }
+
 }
