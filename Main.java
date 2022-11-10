@@ -117,8 +117,8 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 public GridPane LogInGridPane() {
 	GridPane gridPaneLogIn = new GridPane();
 	gridPaneLogIn.setStyle("-fx-background-color: WHITE;");
-	gridPaneLogIn.setPrefWidth(600);
-	gridPaneLogIn.setPrefHeight(300);
+	gridPaneLogIn.setPrefWidth(800);
+	gridPaneLogIn.setPrefHeight(600);
 	gridPaneLogIn.getColumnConstraints().add(new ColumnConstraints(50));
 	gridPaneLogIn.getRowConstraints().add(new RowConstraints(50));
 
@@ -148,7 +148,8 @@ public GridPane LogInGridPane() {
 						warningId.setText("             Too Many Digits              ");
 					}
 					if (text.length() == 9) {
-						warningId.setText("             Logging In ...              ");
+						warningId.setText("             Logging In ...               ");
+						logInIdText.setDisable(true);
 						window.setScene(statusScene);
 					}
 				}
@@ -169,6 +170,8 @@ public GridPane LogInGridPane() {
 	gridPaneLogIn.add(warningId, 2, 0);
 	gridPaneLogIn.add(logInIdText, 2, 1);
 	gridPaneLogIn.add(logInButton, 3, 1);
+	gridPaneLogIn.setAlignment(Pos.TOP_CENTER);
+	gridPaneLogIn.setPadding(new Insets(0, 25, 100, -20));
 	
 	return gridPaneLogIn;
 }
