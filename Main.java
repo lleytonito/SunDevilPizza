@@ -33,6 +33,9 @@ import javafx.scene.control.Alert.AlertType;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.Group;
@@ -136,6 +139,7 @@ public GridPane LogInGridPane() {
 		@Override public void handle(ActionEvent e) {
 			String text = "";
 			boolean numbersOnly;
+			Timer timeToLogIn = new Timer();
 			if (logInIdText.getText().isEmpty() == false) {
 				text = logInIdText.getText();
 				numbersOnly = text.chars().allMatch(Character::isDigit);
@@ -150,7 +154,15 @@ public GridPane LogInGridPane() {
 					if (text.length() == 9) {
 						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
-						window.setScene(statusScene);
+						TimerTask logTime = new TimerTask()
+						{
+							public void run()
+							{
+								window.setScene(statusScene);
+							}
+						};
+						
+						timeToLogIn.schedule(logTime, 2000l);
 					}
 				}
 				else if (numbersOnly == false) {
