@@ -40,7 +40,6 @@ import javafx.scene.Group;
 
 
 //Main class
-//test - hari 11/6, 8:39
 public class Main extends Application implements EventHandler<ActionEvent> {
 	
 	
