@@ -42,7 +42,6 @@ import javafx.scene.Group;
 //Main class
 public class Main extends Application implements EventHandler<ActionEvent> {
 	
-	
 	Stage window, LogInStage;
 	public Scene homeScene, statusScene, orderScene, logScene;
 	double progress = .25;
@@ -513,9 +512,9 @@ public VBox hRight() {
 				FileWriter r = new FileWriter(storageFileName);
 				r.write(previousOrders);
 				r.close();
-				System.out.println("Successfully wrote to the file.");
+				//System.out.println("Successfully wrote to the file.");
 			} catch (IOException f) {
-				System.out.println("An error occurred.");
+				//System.out.println("An error occurred.");
 				f.printStackTrace();
 			}
 			//===
