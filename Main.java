@@ -1,7 +1,7 @@
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-//import javafx.css.converter.StringConverter;
+import javafx.css.converter.StringConverter;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -36,13 +36,10 @@ import java.time.LocalDate;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.Group;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileWriter;
-import java.util.Scanner;
 
 
 //Main class
+//test - hari 11/6, 8:39
 public class Main extends Application implements EventHandler<ActionEvent> {
 	
 	
@@ -64,33 +61,14 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 
 	boolean selected = false;
 
-	//String sizes[] = { "Small", "Medium", "Large"};
+	String sizes[] = { "Small", "Medium", "Large"};
 	String selectedSize;
 	String selectedType;
 	String toppings;
-
-	String userID;
-	static File f;
-	static String storageFileName = "SunDevilPizzaStorage.txt";
-	String delimiter = "|";
-	static String previousOrders = "";
-	String currentOrder = "";
 	
 	
-	public static void main(String[] args) throws IOException {
-		f = new File(storageFileName);
-		f.createNewFile();
-
-		try {
-			Scanner reader = new Scanner(f);
-			while (reader.hasNextLine()) {
-				previousOrders = previousOrders + reader.nextLine() + "\n";
-			}
-			reader.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-		}
+	public static void main(String[] args) {
+		
 		launch(args);
 	}
 	
@@ -171,26 +149,6 @@ public GridPane LogInGridPane() {
 					}
 					if (text.length() == 9) {
 						warningId.setText("             Logging In ...              ");
-						userID = text;
-						//=== write to file
-						//parse toppings
-						String t2 = toppings.substring(10); //remove "toppings"
-						t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
-						t2 = t2.substring(0, t2.length()-1); //remove comma at the end
-						t2 = t2.toLowerCase();
-
-						//new order info
-						currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
-						previousOrders = previousOrders + currentOrder;
-						try { //write to file
-							FileWriter fr = new FileWriter(storageFileName);
-							fr.write(previousOrders);
-							fr.close();
-						} catch (IOException f) {
-							System.out.println("An error occurred.");
-							f.printStackTrace();
-						}
-						//===
 						window.setScene(statusScene);
 					}
 				}
