@@ -171,25 +171,7 @@ public GridPane LogInGridPane() {
 					if (text.length() == 9) {
 						warningId.setText("             Logging In ...              ");
 						userID = text;
-						//write to file
-						String t2 = toppings.substring(10); //remove "toppings"
-						t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
-						t2 = t2.substring(0, t2.length()-1); //remove comma at the end
-						t2 = t2.toLowerCase();
-						currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
-						previousOrders = previousOrders + currentOrder;
-
-						try {
-							FileWriter r = new FileWriter(storageFileName);
-							r.write(previousOrders);
-							r.close();
-							System.out.println("Successfully wrote to the file.");
-						} catch (IOException f) {
-							System.out.println("An error occurred.");
-							f.printStackTrace();
-						}
-						//===
-						window.setScene(statusScene);
+						window.setScene(orderScene);
 					}
 				}
 				else if (numbersOnly == false) {
@@ -314,7 +296,7 @@ public HBox homeHBox() {
 	  HBox hbox = new HBox();
 	  Button orderNow = new Button("Order Now");
 	  orderNow.setPrefSize(200, 40);
-	  orderNow.setOnAction(e -> window.setScene(orderScene));
+	  orderNow.setOnAction(e -> window.setScene(logScene));
 	  hbox.setAlignment(Pos.BOTTOM_RIGHT);
 	  hbox.getChildren().add(orderNow);
 	
@@ -519,7 +501,25 @@ public VBox hRight() {
       			        a.show();
 		}
 		else {
-			window.setScene(logScene);
+			//write to file
+			String t2 = toppings.substring(10); //remove "toppings"
+			t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
+			t2 = t2.substring(0, t2.length()-1); //remove comma at the end
+			t2 = t2.toLowerCase();
+			currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
+			previousOrders = previousOrders + currentOrder;
+
+			try {
+				FileWriter r = new FileWriter(storageFileName);
+				r.write(previousOrders);
+				r.close();
+				System.out.println("Successfully wrote to the file.");
+			} catch (IOException f) {
+				System.out.println("An error occurred.");
+				f.printStackTrace();
+			}
+			//===
+			window.setScene(statusScene);
 		}
 		}
 });
