@@ -1,7 +1,7 @@
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.converter.StringConverter;
+//import javafx.css.converter.StringConverter;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -30,18 +30,17 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalDate;
+import java.util.Scanner;
+
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.Group;
 
 
 //Main class
-//test - hari 11/6, 8:39
 public class Main extends Application implements EventHandler<ActionEvent> {
-	
 	
 	Stage window, LogInStage;
 	public Scene homeScene, statusScene, orderScene, logScene;
@@ -65,10 +64,31 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	String selectedSize;
 	String selectedType;
 	String toppings;
+	String delimiter = "|";
+
+	static String storageFileName = "SunDevilPizzaStorage.txt";
+	static String previousOrders = "";
+	String currentOrder;
+	static File f;
+	String userID;
 	
 	
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws IOException {
+		//create file
+		f = new File(storageFileName);
+		f.createNewFile();
+
+		//read previous orders
+		try {
+			Scanner reader = new Scanner(f);
+			while (reader.hasNextLine()) {
+				previousOrders = previousOrders + reader.nextLine() + "\n";
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
 		launch(args);
 	}
 	
@@ -277,7 +297,7 @@ public HBox homeHBox() {
 	  HBox hbox = new HBox();
 	  Button orderNow = new Button("Order Now");
 	  orderNow.setPrefSize(200, 40);
-	  orderNow.setOnAction(e -> window.setScene(orderScene));
+	  orderNow.setOnAction(e -> window.setScene(logScene));
 	  hbox.setAlignment(Pos.BOTTOM_RIGHT);
 	  hbox.getChildren().add(orderNow);
 	
@@ -482,7 +502,25 @@ public VBox hRight() {
       			        a.show();
 		}
 		else {
-			window.setScene(logScene);
+			//write to file
+			String t2 = toppings.substring(10); //remove "toppings"
+			t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
+			t2 = t2.substring(0, t2.length()-1); //remove comma at the end
+			t2 = t2.toLowerCase();
+			currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
+			previousOrders = previousOrders + currentOrder;
+
+			try {
+				FileWriter r = new FileWriter(storageFileName);
+				r.write(previousOrders);
+				r.close();
+				//System.out.println("Successfully wrote to the file.");
+			} catch (IOException f) {
+				//System.out.println("An error occurred.");
+				f.printStackTrace();
+			}
+			//===
+			window.setScene(statusScene);
 		}
 		}
 });
