@@ -1,9 +1,8 @@
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.converter.StringConverter;
+//import javafx.css.converter.StringConverter;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -29,28 +28,31 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalDate;
-import java.util.Timer;
-import java.util.TimerTask;
-
+import java.util.Scanner;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.Group;
-
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.util.Duration;
 
 //Main class
-//test - hari 11/6, 8:39
-public class Main extends Application implements EventHandler<ActionEvent> {
-	
+public class Main extends Application {
 	
 	Stage window, LogInStage;
 	public Scene homeScene, statusScene, orderScene, logScene;
-	double progress = .25;
-	ProgressBar orderProgress = new ProgressBar(progress);
-	Label orderStatus = new Label("Preparing");
+	ProgressBar orderProgress = new ProgressBar();
+	private static final Integer STARTTIME = 15;
+	private IntegerProperty timeSeconds = new SimpleIntegerProperty(STARTTIME*100);
+	private Timeline timeline;
+	private Timeline statusTimeline;
+	public Label orderStatus = new Label("Preparing");
+
 	int SCREEN_WIDTH = 800;
 	int SCREEN_HEIGHT = 600;
 
@@ -58,6 +60,8 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Text pizzaType;
 	Text pizzaSize;
 	Text subtitle3;
+
+	Text total;
 
 	ChoiceBox cbType;
 	ChoiceBox cbSize;
@@ -68,10 +72,34 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	String selectedSize;
 	String selectedType;
 	String toppings;
+	String delimiter = "|";
+
+	static String storageFileName = "SunDevilPizzaStorage.txt";
+	static String previousOrders = "";
+	String currentOrder;
+	static File f;
+	String userID;
+	Double price; 
+
+	HBox hboxPrice = new HBox();
 	
 	
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws IOException {
+		//create file
+		f = new File(storageFileName);
+		f.createNewFile();
+
+		//read previous orders
+		try {
+			Scanner reader = new Scanner(f);
+			while (reader.hasNextLine()) {
+				previousOrders = previousOrders + reader.nextLine() + "\n";
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+		}
 		launch(args);
 	}
 	
@@ -146,7 +174,6 @@ public GridPane LogInGridPane() {
 		@Override public void handle(ActionEvent e) {
 			String text = "";
 			boolean numbersOnly;
-			Timer timeToLogIn = new Timer();
 			if (logInIdText.getText().isEmpty() == false) {
 				text = logInIdText.getText();
 				numbersOnly = text.chars().allMatch(Character::isDigit);
@@ -160,19 +187,15 @@ public GridPane LogInGridPane() {
 					if (text.length() > 10) {
 						warningId.setText("             Too Many Digits              ");
 					}
+
 					//if id is equal to 10 digits log in
+
 					if (text.length() == 10) {
 						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
-						TimerTask logTime = new TimerTask()
-						{
-							public void run()
-							{
-								window.setScene(statusScene);
-							}
-						};
+								userID = text;
+								window.setScene(orderScene);
 						
-						timeToLogIn.schedule(logTime, 2000l);
 					}
 				}
 				else if (numbersOnly == false) {
@@ -198,6 +221,10 @@ public GridPane LogInGridPane() {
 	return gridPaneLogIn;
 }
 
+
+
+
+
 //returnHBox used for the bottom of the status screen
 public HBox returnHBox() {
 		HBox hbox = new HBox();
@@ -206,10 +233,6 @@ public HBox returnHBox() {
 		//make a new order button set to return to home screen
 		Button returnHome = new Button("Make a New Order");
 		returnHome.setOnAction(e -> window.setScene(homeScene));
-		
-		//test button for progress bar, needs to be replaced with timer but currently directs to handle class
-		Button test = new Button("Test Order Progress");
-		test.setOnAction(this);
 
 		Button orderDetails = new Button("View Order Details");
 		orderDetails.setOnAction(new EventHandler<ActionEvent>() {
@@ -219,31 +242,16 @@ public HBox returnHBox() {
 				t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
 				t2 = t2.substring(0, t2.length()-1); //remove comma at the end
 				t2 = t2.toLowerCase();
-				subtitle3.setText("You ordered a " + selectedSize.toLowerCase() + " " + selectedType.toLowerCase() + " pizza with " + t2);
+				subtitle3.setText(userID + " ordered a " + selectedSize.toLowerCase() + " " + selectedType.toLowerCase() + " pizza with " + t2);
 			}
 		});
 
-		hbox.getChildren().addAll(returnHome, test, orderDetails);
+		hbox.getChildren().addAll(returnHome, orderDetails);
 		
 		return hbox;
 }
 
-//handling for the progressbar on status screen
-public void handle(ActionEvent event) {
-	if (progress < 1) {
-			progress+=.25;
-	orderProgress.setProgress(progress);
-	}
-	if (progress == .5) {
-		orderStatus.setText("Ready To Cook");
-	}
-	if (progress == .75) {
-		orderStatus.setText("Cooking");
-	}
-	if (progress == 1) {
-		orderStatus.setText("Ready");
-	}
-}
+
 
 
 //titleVbox used for top of Status Screen
@@ -271,6 +279,9 @@ public HBox statusHBox() {
 	status.setFont(Font.font("Roboto Blacak", FontWeight.BOLD, 18));
 	orderStatus.setFont(Font.font("Roboto Blacak", FontWeight.BOLD, 18));
 
+	
+	orderProgress.progressProperty().bind(timeSeconds.divide(STARTTIME*100.0).subtract(1).multiply(-1));
+
 	orderProgress.setPrefSize(300, 25);
 	orderProgress.setStyle("-fx-accent: #8C1D40;");
 	hbox.setAlignment(Pos.CENTER);
@@ -278,10 +289,13 @@ public HBox statusHBox() {
 	return hbox;
 }
 
+
 //dealsHBox used for graphic on home screen
 public HBox dealsHBox() throws FileNotFoundException {
 	HBox hbox = new HBox();
-	FileInputStream inputstream = new FileInputStream("C:\\Users\\harir\\Desktop\\sparkyDeal.jpeg");
+
+	FileInputStream inputstream = new FileInputStream("/Users/a/Desktop/sparkyDeal.jpeg");
+
 	Image img = new Image(inputstream);
 	
 	ImageView format = new ImageView(img);
@@ -299,7 +313,7 @@ public HBox homeHBox() {
 	  HBox hbox = new HBox();
 	  Button orderNow = new Button("Order Now");
 	  orderNow.setPrefSize(200, 40);
-	  orderNow.setOnAction(e -> window.setScene(orderScene));
+	  orderNow.setOnAction(e -> window.setScene(logScene));
 	  hbox.setAlignment(Pos.BOTTOM_RIGHT);
 	  hbox.getChildren().add(orderNow);
 	
@@ -393,25 +407,67 @@ public VBox hLeft() {
 				selectedSize =cbSize.getValue().toString();
 				selectedType = cbType.getValue().toString();
 				pizzaSize.setText("Size: " + selectedSize);
+				if (selectedSize == "Small") {
+					price = 5.99;
+				}else if (selectedSize == "Medium") {
+					price = 7.99;
+				}else if (selectedSize == "Large") {
+					price = 9.99;
+				}
+
 				pizzaType.setText("Type: " + selectedType);
+				if (selectedType == "Vegetable") {
+					price = price + 1;
+				}
 
 				toppings = "Toppings:\n";
-				if(cbM.isSelected()) {toppings = toppings + "Mushrooms\n";}
-				if(cbOl.isSelected()) {toppings = toppings + "Olives\n";}
-				if(cbP.isSelected()) {toppings = toppings + "Peppers\n";}
-				if(cbOn.isSelected()) {toppings = toppings + "Onions\n";}
-				if(cbEx.isSelected()) {toppings = toppings + "Extra cheese\n";}
-				if(cbPa.isSelected()) {toppings = toppings + "Pineapples";}
-			
+				if(cbM.isSelected()) {toppings = toppings + "Mushrooms\n"; price = price + 1; }
+				if(cbOl.isSelected()) {toppings = toppings + "Olives\n"; price = price + 1;}
+				if(cbP.isSelected()) {toppings = toppings + "Peppers\n"; price = price + 1;}
+				if(cbOn.isSelected()) {toppings = toppings + "Onions\n"; price = price + 1;}
+				if(cbEx.isSelected()) {toppings = toppings + "Extra cheese\n"; price = price + 1;}
+				if(cbPa.isSelected()) {toppings = toppings + "Pineapples"; price = price + 1;}
+				
 				pizzaToppings.setText(toppings);
 				selected = true;
+				
+				total = new Text("Your total is: " + price);
+				hboxPrice.setAlignment(Pos.CENTER);
+				hboxPrice.getChildren().addAll(total);
 			}
 	});
+
+	//Text and hbox for price menu
+	Text small = new Text("Small: $5.99");
+	Text medium = new Text("Medium: $7.99");
+	Text large = new Text("Large: $9.99");
+	Text top = new Text("Each Topping: $1.00");
+	Text veg = new Text("Vegetable Pizza: +$1.00 to size price");
+	Text pepAndCheese = new Text("Pepperoni and Cheese Pizza: default size price");
+
+	HBox hboxSmall = new HBox();
+	hboxSmall.getChildren().add(small);
+	HBox hboxMedium = new HBox();
+	hboxMedium.getChildren().add(medium);
+	HBox hboxLarge = new HBox();
+	hboxLarge.getChildren().add(large);
+	HBox hboxTop = new HBox();
+	hboxTop.getChildren().add(top);
+	HBox hboxVeg = new HBox();
+	hboxVeg.getChildren().add(veg);
+	HBox hboxPepAndCheese = new HBox();
+	hboxPepAndCheese.getChildren().add(pepAndCheese);
 
  	vbox.getChildren().add(hboxSize);
 	vbox.getChildren().add(hboxType);
 	vbox.getChildren().add(gridpane);
 	vbox.getChildren().add(select);
+	vbox.getChildren().add(hboxSmall);
+	vbox.getChildren().add(hboxMedium);
+	vbox.getChildren().add(hboxLarge);
+	vbox.getChildren().add(hboxTop);
+	vbox.getChildren().add(hboxVeg);
+	vbox.getChildren().add(hboxPepAndCheese);
 	return vbox;
 }
 
@@ -504,12 +560,54 @@ public VBox hRight() {
       			        a.show();
 		}
 		else {
-			window.setScene(logScene);
+			//write to file
+			String t2 = toppings.substring(10); //remove "toppings"
+			t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
+			t2 = t2.substring(0, t2.length()-1); //remove comma at the end
+			t2 = t2.toLowerCase();
+			currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
+			previousOrders = previousOrders + currentOrder;
+
+			try {
+				FileWriter r = new FileWriter(storageFileName);
+				r.write(previousOrders);
+				r.close();
+				//System.out.println("Successfully wrote to the file.");
+			} catch (IOException f) {
+				//System.out.println("An error occurred.");
+				f.printStackTrace();
+			}
+			//===
+			window.setScene(statusScene);
+			
+			//setting up timeline for progress bar 
+			timeSeconds.set((STARTTIME+1)*100);
+            timeline = new Timeline();
+            timeline.getKeyFrames().add(
+            		new KeyFrame(Duration.seconds(STARTTIME+1),
+                    new KeyValue(timeSeconds, 0)));
+            timeline.playFromStart();
+            
+            statusTimeline = new Timeline();
+            statusTimeline.getKeyFrames().add(
+            		new KeyFrame(Duration.seconds(6), 
+            		new KeyValue(orderStatus.textProperty(), "Ready to Cook")));
+            statusTimeline.getKeyFrames().add(
+            		new KeyFrame(Duration.seconds(11), 
+            		new KeyValue(orderStatus.textProperty(), "Cooking")));
+            statusTimeline.getKeyFrames().add(
+            		new KeyFrame(Duration.seconds(16), 
+            		new KeyValue(orderStatus.textProperty(), "Ready")));
+            statusTimeline.playFromStart();
+            
+            
 		}
 		}
+		
+		
 });
 
-	vbox.getChildren().addAll(yourPizza, pizzaSize, pizzaType, pizzaToppings, hboxDate, hboxTime, placeOrder);
+	vbox.getChildren().addAll(yourPizza, pizzaSize, pizzaType, pizzaToppings, hboxPrice, hboxDate, hboxTime, placeOrder);
 return vbox;
 }
 
