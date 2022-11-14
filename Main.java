@@ -124,17 +124,24 @@ public GridPane LogInGridPane() {
 	gridPaneLogIn.setPrefHeight(600);
 	gridPaneLogIn.getColumnConstraints().add(new ColumnConstraints(50));
 	gridPaneLogIn.getRowConstraints().add(new RowConstraints(50));
-
+	
+	//text configurations for labels 
 	Text asuId = new Text();
 	Text warningId = new Text();
 	asuId.setText("ASURITE ID: ");
 	asuId.setFont(Font.font("Impact", 20));
 	warningId.setText("Please Enter Your ASURITE ID");
 	warningId.setFont(Font.font("Impact", 20));
-	TextField logInIdText = new TextField();
 	
-
+	//textfield to enter id
+	TextField logInIdText = new TextField();
+	logInIdText.setDisable(false);
+	
+	//log in button
 	Button logInButton = new Button("Log In");
+	
+	//action for when user presses log in
+	//cases to consider to pass log in
 	logInButton.setOnAction(new EventHandler<ActionEvent>() {
 		@Override public void handle(ActionEvent e) {
 			String text = "";
@@ -145,13 +152,16 @@ public GridPane LogInGridPane() {
 				numbersOnly = text.chars().allMatch(Character::isDigit);
 				if (numbersOnly == true)
 				{
+					//if id is less than 10 digits output warning message
 					if (text.length() < 10) {
 						warningId.setText("             Not Enough Digits            ");
 					}
+					//if id is more than 10 digits output warning message
 					if (text.length() > 10) {
 						warningId.setText("             Too Many Digits              ");
 					}
-					if (text.length() == 9) {
+					//if id is equal to 10 digits log in
+					if (text.length() == 10) {
 						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
 						TimerTask logTime = new TimerTask()
