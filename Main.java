@@ -54,6 +54,7 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	Text pizzaType;
 	Text pizzaSize;
 	Text subtitle3;
+	Text total;
 
 	ChoiceBox cbType;
 	ChoiceBox cbSize;
@@ -71,6 +72,9 @@ public class Main extends Application implements EventHandler<ActionEvent> {
 	String currentOrder;
 	static File f;
 	String userID;
+	Double price; 
+
+	HBox hboxPrice = new HBox();
 	
 	
 	public static void main(String[] args) throws IOException {
@@ -277,7 +281,7 @@ public HBox statusHBox() {
 //dealsHBox used for graphic on home screen
 public HBox dealsHBox() throws FileNotFoundException {
 	HBox hbox = new HBox();
-	FileInputStream inputstream = new FileInputStream("C:\\Users\\harir\\Desktop\\sparkyDeal.jpeg");
+	FileInputStream inputstream = new FileInputStream("sparkyDeal.jpeg");
 	Image img = new Image(inputstream);
 	
 	ImageView format = new ImageView(img);
@@ -389,25 +393,67 @@ public VBox hLeft() {
 				selectedSize =cbSize.getValue().toString();
 				selectedType = cbType.getValue().toString();
 				pizzaSize.setText("Size: " + selectedSize);
+				if (selectedSize == "Small") {
+					price = 5.99;
+				}else if (selectedSize == "Medium") {
+					price = 7.99;
+				}else if (selectedSize == "Large") {
+					price = 9.99;
+				}
+
 				pizzaType.setText("Type: " + selectedType);
+				if (selectedType == "Vegetable") {
+					price = price + 1;
+				}
 
 				toppings = "Toppings:\n";
-				if(cbM.isSelected()) {toppings = toppings + "Mushrooms\n";}
-				if(cbOl.isSelected()) {toppings = toppings + "Olives\n";}
-				if(cbP.isSelected()) {toppings = toppings + "Peppers\n";}
-				if(cbOn.isSelected()) {toppings = toppings + "Onions\n";}
-				if(cbEx.isSelected()) {toppings = toppings + "Extra cheese\n";}
-				if(cbPa.isSelected()) {toppings = toppings + "Pineapples";}
-			
+				if(cbM.isSelected()) {toppings = toppings + "Mushrooms\n"; price = price + 1; }
+				if(cbOl.isSelected()) {toppings = toppings + "Olives\n"; price = price + 1;}
+				if(cbP.isSelected()) {toppings = toppings + "Peppers\n"; price = price + 1;}
+				if(cbOn.isSelected()) {toppings = toppings + "Onions\n"; price = price + 1;}
+				if(cbEx.isSelected()) {toppings = toppings + "Extra cheese\n"; price = price + 1;}
+				if(cbPa.isSelected()) {toppings = toppings + "Pineapples"; price = price + 1;}
+				
 				pizzaToppings.setText(toppings);
 				selected = true;
+				
+				total = new Text("Your total is: " + price);
+				hboxPrice.setAlignment(Pos.CENTER);
+				hboxPrice.getChildren().addAll(total);
 			}
 	});
+
+	//Text and hbox for price menu
+	Text small = new Text("Small: $5.99");
+	Text medium = new Text("Medium: $7.99");
+	Text large = new Text("Large: $9.99");
+	Text top = new Text("Each Topping: $1.00");
+	Text veg = new Text("Vegetable Pizza: +$1.00 to size price");
+	Text pepAndCheese = new Text("Pepperoni and Cheese Pizza: default size price");
+
+	HBox hboxSmall = new HBox();
+	hboxSmall.getChildren().add(small);
+	HBox hboxMedium = new HBox();
+	hboxMedium.getChildren().add(medium);
+	HBox hboxLarge = new HBox();
+	hboxLarge.getChildren().add(large);
+	HBox hboxTop = new HBox();
+	hboxTop.getChildren().add(top);
+	HBox hboxVeg = new HBox();
+	hboxVeg.getChildren().add(veg);
+	HBox hboxPepAndCheese = new HBox();
+	hboxPepAndCheese.getChildren().add(pepAndCheese);
 
  	vbox.getChildren().add(hboxSize);
 	vbox.getChildren().add(hboxType);
 	vbox.getChildren().add(gridpane);
 	vbox.getChildren().add(select);
+	vbox.getChildren().add(hboxSmall);
+	vbox.getChildren().add(hboxMedium);
+	vbox.getChildren().add(hboxLarge);
+	vbox.getChildren().add(hboxTop);
+	vbox.getChildren().add(hboxVeg);
+	vbox.getChildren().add(hboxPepAndCheese);
 	return vbox;
 }
 
@@ -523,7 +569,7 @@ public VBox hRight() {
 		}
 });
 
-	vbox.getChildren().addAll(yourPizza, pizzaSize, pizzaType, pizzaToppings, hboxDate, hboxTime, placeOrder);
+	vbox.getChildren().addAll(yourPizza, pizzaSize, pizzaType, pizzaToppings, hboxPrice, hboxDate, hboxTime, placeOrder);
 return vbox;
 }
 
