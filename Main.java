@@ -210,7 +210,7 @@ public GridPane LogInGridPane() {
 								new KeyValue(warningId.textProperty(), "                Logged In                 ")		));
 						pause.playFromStart();
             userID = text;
-						pause.setOnFinished(e2 -> window.setScene(orderScene);));		
+            pause.setOnFinished(e2 -> window.setScene(orderScene));		
 					}
 				}
 				else if (numbersOnly == false) {
