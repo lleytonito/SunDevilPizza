@@ -1,3 +1,6 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +18,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -146,7 +150,7 @@ public GridPane LogInGridPane() {
 		@Override public void handle(ActionEvent e) {
 			String text = "";
 			boolean numbersOnly;
-			Timer timeToLogIn = new Timer();
+			Timeline pause = new Timeline();
 			if (logInIdText.getText().isEmpty() == false) {
 				text = logInIdText.getText();
 				numbersOnly = text.chars().allMatch(Character::isDigit);
@@ -162,17 +166,15 @@ public GridPane LogInGridPane() {
 					}
 					//if id is equal to 10 digits log in
 					if (text.length() == 10) {
-						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
-						TimerTask logTime = new TimerTask()
-						{
-							public void run()
-							{
-								window.setScene(statusScene);
-							}
-						};
-						
-						timeToLogIn.schedule(logTime, 2000l);
+						pause.getKeyFrames().add(
+								new KeyFrame(Duration.seconds(0.2),
+								new KeyValue(warningId.textProperty(), "             Logging In ...               ")		));
+						pause.getKeyFrames().add(
+								new KeyFrame(Duration.seconds(2),
+								new KeyValue(warningId.textProperty(), "                Logged In                 ")		));
+						pause.playFromStart();
+						pause.setOnFinished(e2 -> window.setScene(statusScene);));
 					}
 				}
 				else if (numbersOnly == false) {
