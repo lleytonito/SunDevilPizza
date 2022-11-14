@@ -312,7 +312,7 @@ public HBox statusHBox() {
 public HBox dealsHBox() throws FileNotFoundException {
 	HBox hbox = new HBox();
 
-	FileInputStream inputstream = new FileInputStream("/Users/a/Desktop/sparkyDeal.jpeg");
+	FileInputStream inputstream = new FileInputStream("sparkyDeal.jpeg");
 
 	Image img = new Image(inputstream);
 	
