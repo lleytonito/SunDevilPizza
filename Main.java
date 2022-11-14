@@ -155,7 +155,7 @@ public GridPane LogInGridPane() {
 	gridPaneLogIn.setStyle("-fx-background-color: WHITE;");
 	gridPaneLogIn.setPrefWidth(800);
 	gridPaneLogIn.setPrefHeight(600);
-	gridPaneLogIn.getColumnConstraints().add(new ColumnConstraints(50));
+	gridPaneLogIn.getColumnConstraints().add(new ColumnConstraints(0));
 	gridPaneLogIn.getRowConstraints().add(new RowConstraints(50));
 	
 	//text configurations for labels 
@@ -199,8 +199,7 @@ public GridPane LogInGridPane() {
 						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
 								userID = text;
-								window.setScene(orderScene);
-						
+								window.setScene(orderScene);		
 					}
 				}
 				else if (numbersOnly == false) {
@@ -220,7 +219,7 @@ public GridPane LogInGridPane() {
 	gridPaneLogIn.add(warningId, 2, 0);
 	gridPaneLogIn.add(logInIdText, 2, 1);
 	gridPaneLogIn.add(logInButton, 3, 1);
-	gridPaneLogIn.setAlignment(Pos.TOP_CENTER);
+	gridPaneLogIn.setAlignment(Pos.CENTER);
 	gridPaneLogIn.setPadding(new Insets(0, 25, 100, -20));
 	
 	return gridPaneLogIn;
