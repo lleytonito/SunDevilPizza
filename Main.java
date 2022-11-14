@@ -181,7 +181,7 @@ public GridPane LogInGridPane() {
 					if (text.length() == 10) {
 						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
-
+								userID = text;
 								window.setScene(orderScene);
 						
 					}
@@ -230,7 +230,7 @@ public HBox returnHBox() {
 				t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
 				t2 = t2.substring(0, t2.length()-1); //remove comma at the end
 				t2 = t2.toLowerCase();
-				subtitle3.setText("You ordered a " + selectedSize.toLowerCase() + " " + selectedType.toLowerCase() + " pizza with " + t2);
+				subtitle3.setText(userID + " ordered a " + selectedSize.toLowerCase() + " " + selectedType.toLowerCase() + " pizza with " + t2);
 			}
 		});
 
@@ -282,7 +282,7 @@ public HBox statusHBox() {
 public HBox dealsHBox() throws FileNotFoundException {
 	HBox hbox = new HBox();
 
-	FileInputStream inputstream = new FileInputStream("sparkyDeal.jpeg");
+	FileInputStream inputstream = new FileInputStream("/Users/a/Desktop/sparkyDeal.jpeg");
 
 	Image img = new Image(inputstream);
 	
