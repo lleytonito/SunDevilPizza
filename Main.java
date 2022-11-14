@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.layout.BorderPane;
@@ -114,6 +115,7 @@ public class Main extends Application {
 		homeRoot.setTop(homeVBox());
 		homeRoot.setCenter(dealsHBox());
 		homeScene = new Scene(homeRoot, 800, 600);
+		homeScene.setFill(Color.MAROON);
 	
 		//BorderPane for status screen
 		BorderPane statusRoot = new BorderPane();
@@ -122,6 +124,7 @@ public class Main extends Application {
 		statusRoot.setTop(titleVBox());
 		statusRoot.setCenter(statusHBox());
 		statusScene = new Scene(statusRoot, 800, 600);
+		statusScene.setFill(Color.GOLD);
 		
 		//BorderPane for order screen
 		VBox orderRoot = new VBox();
@@ -132,11 +135,13 @@ public class Main extends Application {
 		title.setStyle("-fx-font: 24 arial;");
 		orderRoot.getChildren().addAll(title, hMain());
 		orderScene = new Scene(orderRoot, 800, 600);
+		orderScene.setFill(Color.MAROON);
 		
 		//Group for login screen                                                                                                
 		Group logRoot = new Group();
 		logScene = new Scene(logRoot);
 		logRoot.getChildren().addAll(LogInGridPane());
+		logScene.setFill(Color.GOLD);
 		
 		//set window to homescene
 		window.setScene(homeScene);
