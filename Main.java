@@ -32,7 +32,9 @@ import javafx.scene.control.Alert.AlertType;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.time.LocalDate;
-import java.util.Scanner;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -156,8 +158,8 @@ public class Main extends Application {
 public GridPane LogInGridPane() {
 	GridPane gridPaneLogIn = new GridPane();
 	gridPaneLogIn.setStyle("-fx-background-color: WHITE;");
-	gridPaneLogIn.setPrefWidth(600);
-	gridPaneLogIn.setPrefHeight(300);
+	gridPaneLogIn.setPrefWidth(800);
+	gridPaneLogIn.setPrefHeight(600);
 	gridPaneLogIn.getColumnConstraints().add(new ColumnConstraints(50));
 	gridPaneLogIn.getRowConstraints().add(new RowConstraints(50));
 
@@ -175,6 +177,7 @@ public GridPane LogInGridPane() {
 		@Override public void handle(ActionEvent e) {
 			String text = "";
 			boolean numbersOnly;
+			Timer timeToLogIn = new Timer();
 			if (logInIdText.getText().isEmpty() == false) {
 				text = logInIdText.getText();
 				numbersOnly = text.chars().allMatch(Character::isDigit);
@@ -187,9 +190,17 @@ public GridPane LogInGridPane() {
 						warningId.setText("             Too Many Digits              ");
 					}
 					if (text.length() == 9) {
-						warningId.setText("             Logging In ...              ");
-						userID = text;
-						window.setScene(orderScene);
+						warningId.setText("             Logging In ...               ");
+						logInIdText.setDisable(true);
+						TimerTask logTime = new TimerTask()
+						{
+							public void run()
+							{
+								window.setScene(statusScene);
+							}
+						};
+						
+						timeToLogIn.schedule(logTime, 2000l);
 					}
 				}
 				else if (numbersOnly == false) {
@@ -209,6 +220,8 @@ public GridPane LogInGridPane() {
 	gridPaneLogIn.add(warningId, 2, 0);
 	gridPaneLogIn.add(logInIdText, 2, 1);
 	gridPaneLogIn.add(logInButton, 3, 1);
+	gridPaneLogIn.setAlignment(Pos.TOP_CENTER);
+	gridPaneLogIn.setPadding(new Insets(0, 25, 100, -20));
 	
 	return gridPaneLogIn;
 }
