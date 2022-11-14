@@ -192,6 +192,7 @@ public GridPane LogInGridPane() {
 					if (text.length() == 9) {
 						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
+
 						TimerTask logTime = new TimerTask()
 						{
 							public void run()
@@ -201,6 +202,7 @@ public GridPane LogInGridPane() {
 						};
 						
 						timeToLogIn.schedule(logTime, 2000l);
+
 					}
 				}
 				else if (numbersOnly == false) {
