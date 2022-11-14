@@ -28,22 +28,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.time.LocalDate;
-
-import java.util.Timer;
-import java.util.TimerTask;
-
-import java.util.Timer;
-import java.util.TimerTask;
-import java.awt.Toolkit;
-
+import java.util.Scanner;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.Group;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.animation.Timeline;
@@ -149,7 +139,7 @@ public class Main extends Application {
 		logRoot.getChildren().addAll(LogInGridPane());
 		
 		//set window to homescene
-		window.setScene(orderScene);
+		window.setScene(homeScene);
 		window.setTitle("Sun Devil Pizza");
 		window.show();
 	}
@@ -177,7 +167,6 @@ public GridPane LogInGridPane() {
 		@Override public void handle(ActionEvent e) {
 			String text = "";
 			boolean numbersOnly;
-			Timer timeToLogIn = new Timer();
 			if (logInIdText.getText().isEmpty() == false) {
 				text = logInIdText.getText();
 				numbersOnly = text.chars().allMatch(Character::isDigit);
@@ -189,20 +178,12 @@ public GridPane LogInGridPane() {
 					if (text.length() > 10) {
 						warningId.setText("             Too Many Digits              ");
 					}
-					if (text.length() == 9) {
+					if (text.length() == 10) {
 						warningId.setText("             Logging In ...               ");
 						logInIdText.setDisable(true);
 
-						TimerTask logTime = new TimerTask()
-						{
-							public void run()
-							{
-								window.setScene(statusScene);
-							}
-						};
+								window.setScene(orderScene);
 						
-						timeToLogIn.schedule(logTime, 2000l);
-
 					}
 				}
 				else if (numbersOnly == false) {
