@@ -71,6 +71,8 @@ public class Main extends Application {
 	ChoiceBox cbType;
 	ChoiceBox cbSize;
 
+	CheckBox cbM, cbOl, cbP, cbOn, cbEx, cbPa;
+
 	boolean selected = false;
 
 	String sizes[] = { "Small", "Medium", "Large"};
@@ -87,8 +89,12 @@ public class Main extends Application {
 	Double price; 
 
 	HBox hboxPrice = new HBox();
-	
-	
+	final DatePicker datePicker= new DatePicker();
+	Spinner<Integer> spinnerHour = new Spinner<>();
+	Spinner<String> spinnerMinute = new Spinner<>();
+	ObservableList<String> minute;
+
+
 	public static void main(String[] args) throws IOException {
 		//create file
 		f = new File(storageFileName);
@@ -250,7 +256,55 @@ public HBox returnHBox() {
 		
 		//make a new order button set to return to home screen
 		Button returnHome = new Button("Make a New Order");
-		returnHome.setOnAction(e -> window.setScene(homeScene));
+		returnHome.setOnAction(new EventHandler<ActionEvent>() {
+		@Override
+		public void handle(ActionEvent event) {
+
+			//reset selection screen
+			price = 0.0;
+			cbM.setSelected(false);
+			cbOl.setSelected(false);
+			cbP.setSelected(false);
+			cbOn.setSelected(false);
+			cbEx.setSelected(false);
+			cbPa.setSelected(false);
+			pizzaSize.setText("Size: ");
+			pizzaType.setText("Type: ");
+			total.setText("Your total is: " );
+			pizzaToppings.setText("Toppings: ");
+			cbType.setValue("Pepperoni");
+			cbSize.setValue("Small");
+			datePicker.setValue(null);
+			SpinnerValueFactory<Integer> valueHour = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,12);
+			SpinnerValueFactory<String> valueMinute = new SpinnerValueFactory.ListSpinnerValueFactory<String>(minute);
+			spinnerHour.setValueFactory(valueHour);
+			spinnerMinute.setValueFactory(valueMinute);
+			selected = false;
+
+			//reset status screen
+			orderStatus.setText("Preparing");
+			timeSeconds.set((STARTTIME+1)*100);
+			timeline = new Timeline();
+			timeline.getKeyFrames().add(
+					new KeyFrame(Duration.seconds(STARTTIME+1),
+							new KeyValue(timeSeconds, 0)));
+			timeline.playFromStart();
+
+			statusTimeline = new Timeline();
+			statusTimeline.getKeyFrames().add(
+					new KeyFrame(Duration.seconds(6),
+							new KeyValue(orderStatus.textProperty(), "Preparing")));
+			statusTimeline.getKeyFrames().add(
+					new KeyFrame(Duration.seconds(11),
+							new KeyValue(orderStatus.textProperty(), "Cooking")));
+			statusTimeline.getKeyFrames().add(
+					new KeyFrame(Duration.seconds(16),
+							new KeyValue(orderStatus.textProperty(), "Ready")));
+			statusTimeline.playFromStart();
+			//transition back to home screen
+			window.setScene(homeScene);
+		}
+	});
 
 		Button orderDetails = new Button("View Order Details");
 		orderDetails.setOnAction(new EventHandler<ActionEvent>() {
@@ -400,12 +454,12 @@ public VBox hLeft() {
 	hboxType.getChildren().add(selectType);
 	hboxType.getChildren().add(cbType);
 
-	CheckBox cbM = new CheckBox("Mushrooms");
-	CheckBox cbOl = new CheckBox("Olives");
-	CheckBox cbP = new CheckBox("Peppers");
-	CheckBox cbOn = new CheckBox("Onions");
-	CheckBox cbEx = new CheckBox("Extra Cheese");
-	CheckBox cbPa = new CheckBox("Pineapples");
+	cbM = new CheckBox("Mushrooms");
+	cbOl = new CheckBox("Olives");
+	cbP = new CheckBox("Peppers");
+	cbOn = new CheckBox("Onions");
+	cbEx = new CheckBox("Extra Cheese");
+	cbPa = new CheckBox("Pineapples");
 	GridPane gridpane = new GridPane();
 	gridpane.setPadding(new Insets(7, 7, 7, 7));
 	gridpane.setAlignment(Pos.TOP_CENTER);
@@ -449,7 +503,7 @@ public VBox hLeft() {
 				pizzaToppings.setText(toppings);
 				selected = true;
 				
-				total = new Text("Your total is: " + price);
+				total.setText("Your total is: " + price);
 				hboxPrice.setAlignment(Pos.CENTER);
 				hboxPrice.getChildren().addAll(total);
 			}
@@ -502,11 +556,12 @@ public VBox hRight() {
 	Text yourPizza = new Text("Your Pizza: ");
 	pizzaSize = new Text("Size: ");
 	pizzaType = new Text("Type: ");
+	total = new Text("Your total is: " );
 	pizzaToppings = new Text("Toppings: ");
 
 	// Date info and Date HBox
 	Text enterDate = new Text("Pickup Date:");
-	final DatePicker datePicker = new DatePicker();
+	//datePicker = new DatePicker();
 	HBox hboxDate = new HBox();
 	hboxDate.setSpacing(10);
 	hboxDate.setPrefWidth(SCREEN_WIDTH/2);
@@ -522,12 +577,10 @@ public VBox hRight() {
 	// Time section for spinner 
 	Text enterTime = new Text("Pickup Time:");
 	Text colon = new Text (":");
-	ObservableList<String> minute = FXCollections.observableArrayList("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", 
+	minute = FXCollections.observableArrayList("00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
 			"10", "11", "12", "13", "14", "15", "16", "17", "18", "19","20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
 			"30", "31", "32", "33", "34", "35", "36", "37", "38", "39","40", "41", "42", "43", "44", "45", "46", "47", "48", "49",
 			"50", "51", "52", "53", "54", "55", "56", "57", "58", "59");
-	Spinner<Integer> spinnerHour = new Spinner<>(); 
-	Spinner<String> spinnerMinute = new Spinner<>();
 	SpinnerValueFactory<Integer> valueHour = new SpinnerValueFactory.IntegerSpinnerValueFactory(1,12);
 	SpinnerValueFactory<String> valueMinute = new SpinnerValueFactory.ListSpinnerValueFactory<String>(minute);
 	spinnerHour.setValueFactory(valueHour);
@@ -580,11 +633,19 @@ public VBox hRight() {
 		else {
 			//write to file
 			String t2 = toppings.substring(10); //remove "toppings"
-			t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
-			t2 = t2.substring(0, t2.length()-1); //remove comma at the end
-			t2 = t2.toLowerCase();
-			currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
-			previousOrders = previousOrders + currentOrder;
+			if(t2.length() > 1){
+				t2 = t2.replaceAll("\n", ", "); //replace newline characters with commas
+				t2 = t2.substring(0, t2.length()-1); //remove comma at the end
+				t2 = t2.toLowerCase();
+				currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
+				previousOrders = previousOrders + currentOrder;
+			}
+			else{
+				t2 = "";
+				currentOrder = userID + delimiter + "FALSE" + delimiter + selectedSize + delimiter + selectedType + delimiter + t2 + "\n";
+				previousOrders = previousOrders + currentOrder;
+			}
+
 
 			try {
 				FileWriter r = new FileWriter(storageFileName);
